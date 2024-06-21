@@ -1,12 +1,12 @@
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { templates } from "../templates";
-import Template2 from "../templates/Template2";
 import TemplateCustom from "../templates/TemplateCustom";
+import { blue } from "@mui/material/colors";
 
 const SelectTemplate = () => {
   return (
     <>
-      {/* <Template2 />  */}
+      <Typography variant="h5" sx={{my: 1, fontWeight: "bold", color: blue[700]}}>Resume Builder</Typography>
       <TemplateCustom />
       {/* <Grid container>
         {templates.map((template) => (

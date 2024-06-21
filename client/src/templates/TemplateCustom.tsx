@@ -7,6 +7,7 @@ import {
   Stack,
   Grid,
   Button,
+  CardActions,
 } from "@mui/material";
 import { SyntheticEvent, useRef, useState } from "react";
 import Draggable from "react-draggable";
@@ -25,6 +26,7 @@ const TemplateCustom = () => {
   const componentRef = useRef(null);
   const [save, setSave] = useState<boolean>(false);
   const [disableDraggable, setDisableDraggable] = useState<boolean>(false);
+  const [display, setDisplay] = useState<string>("block")
 
   const [image, setImage] = useState<string | null>(null);
 
@@ -39,17 +41,17 @@ const TemplateCustom = () => {
 
   return (
     <div>
-      <Card variant="outlined" sx={{ m: 3 }}>
+      <Card variant="outlined">
         <CardContent>
           <Box ref={componentRef} sx={{ p: 3 }}>
             <Grid container justifyContent="space-between">
               <Grid item>
                 <SideInfo title="" data={title} save={save} />
               </Grid>
-              <Grid item>
+              <Grid item sx={{display}}>
                 <Draggable>
                   <div>
-                    <div className={`${!disableDraggable && "border"}`}>
+                    <div className={`${disableDraggable || save ? "" : "border"}`}>
                       <label htmlFor="image">
                         {image ? (
                           <img src={image} alt="" className="profile-img" />
@@ -65,15 +67,12 @@ const TemplateCustom = () => {
                         onChange={handelChangeImage}
                       />
                     </div>
-                    {!disableDraggable && (
+                    {!disableDraggable && !save && (
                       <>
-                        {/* <IconButton onMouseMove={handleExpand}>
-                    <HiOutlineArrowsExpand />
-                </IconButton> */}
                         <IconButton onClick={() => setDisableDraggable(true)}>
                           <HiCheck />
                         </IconButton>
-                        <IconButton>
+                        <IconButton onClick={() => setDisplay("none")}>
                           <HiX />
                         </IconButton>
                       </>
@@ -82,7 +81,6 @@ const TemplateCustom = () => {
                 </Draggable>
               </Grid>
             </Grid>
-
             <Divider />
             <Box>
               <Grid container sx={{ p: 1 }}>
@@ -109,22 +107,18 @@ const TemplateCustom = () => {
               </Grid>
             </Box>
           </Box>
-          <Stack spacing={3} direction="row-reverse">
-            <Button
-              variant="contained"
-              color="success"
-              onClick={handleDownload}
-            >
-              Download
-            </Button>
-            <Button variant="contained" onClick={() => setSave(true)}>
-              Save
-            </Button>
-            <Button variant="outlined" onClick={() => setSave(false)}>
-              Edit
-            </Button>
-          </Stack>
         </CardContent>
+        <CardActions sx={{ justifyContent: "end" }}>
+          <Button variant="outlined" onClick={() => setSave(false)}>
+            Edit
+          </Button>
+          <Button variant="contained" onClick={() => setSave(true)}>
+            Save
+          </Button>
+          <Button variant="contained" color="success" onClick={handleDownload}>
+            Download
+          </Button>
+        </CardActions>
       </Card>
     </div>
   );

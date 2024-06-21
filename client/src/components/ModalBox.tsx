@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useState } from "react";
+import { SyntheticEvent } from "react";
 import {
   Modal,
   Box,
@@ -13,6 +13,8 @@ import FontSize from "./FontSize";
 import { FormValue } from "../templates/Inputs";
 import { VscDebugBreakpointFunction } from "react-icons/vsc";
 import { Textarea } from "@mui/joy";
+import { Collapse } from "@mui/material";
+import { TransitionGroup } from "react-transition-group";
 
 const style = {
   position: "absolute",
@@ -48,13 +50,14 @@ const ModalBox = (props: ModalBoxProps) => {
     const values = [...formValues];
     values[index].value = e.target.value;
     setFormValues(values);
+    console.log(values);
   };
 
   const handleAddField = () => {
     setFormValues([
       ...formValues,
       {
-        id: formValues.length + 1,
+        id: formValues[formValues.length - 1].id + 1,
         label: "New field",
         value: "",
         icon: <VscDebugBreakpointFunction />,
@@ -63,9 +66,7 @@ const ModalBox = (props: ModalBoxProps) => {
   };
 
   const handleDeleteField = (index: number) => {
-    const values = [...formValues];
-    values.splice(index, 1);
-    setFormValues(values);
+    setFormValues(formValues.filter((value) => value.id !== index));
   };
 
   const handleSubmit = (e: SyntheticEvent) => {
@@ -85,55 +86,59 @@ const ModalBox = (props: ModalBoxProps) => {
     >
       <Box className="model">
         <form onSubmit={handleSubmit}>
-          <Stack spacing={2}>
-            <FontSize fontSize={fontSize} setFontSize={setFontSize} />
+          <FontSize fontSize={fontSize} setFontSize={setFontSize} />
+          <TransitionGroup>
             {formValues.map((info, index) => (
-              <Stack spacing={1} direction="row">
-                {info.label === "Description" ? (
-                  <Textarea
-                    minRows={6}
-                    sx={{ width: "100%" }}
-                    key={index}
-                    value={info.value}
-                    onChange={(e) => handleChange(e, index)}
-                    placeholder="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s."
-                  />
-                ) : (
-                  <TextField
-                    fullWidth
-                    key={index}
-                    value={info.value}
-                    onChange={(e) => handleChange(e, index)}
-                    placeholder={info.label}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          {info.icon}
-                        </InputAdornment>
-                      ),
-                    }}
-                    variant="outlined"
-                  />
-                )}
-                <IconButton
-                  color="error"
-                  onClick={() => handleDeleteField(index)}
-                >
-                  <HiX />
-                </IconButton>
-              </Stack>
+              <Collapse key={info.id}>
+                <Stack spacing={1} direction="row" sx={{ my: 1 }}>
+                  {info.label === "Description" ? (
+                    <Textarea
+                      required
+                      minRows={6}
+                      sx={{ width: "100%" }}
+                      value={info.value}
+                      onChange={(e) => handleChange(e, index)}
+                      placeholder="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s."
+                    />
+                  ) : (
+                    <TextField
+                      required
+                      fullWidth
+                      value={info.value}
+                      onChange={(e) => handleChange(e, index)}
+                      placeholder={info.label}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            {info.icon}
+                          </InputAdornment>
+                        ),
+                      }}
+                      variant="outlined"
+                    />
+                  )}
+                  {formValues.length > 1 && (
+                    <IconButton
+                      color="error"
+                      onClick={() => handleDeleteField(info.id)}
+                    >
+                      <HiX />
+                    </IconButton>
+                  )}
+                </Stack>
+              </Collapse>
             ))}
-            <Stack spacing={2} direction="row">
-              <Button variant="outlined" onClick={handleAddField}>
-                Add
-              </Button>
-              <Button variant="outlined" onClick={() => setOpen(false)}>
-                Cancel
-              </Button>
-              <Button variant="contained" type="submit">
-                Save
-              </Button>
-            </Stack>
+          </TransitionGroup>
+          <Stack spacing={1} direction="row">
+            <Button variant="outlined" onClick={handleAddField}>
+              Add
+            </Button>
+            <Button variant="outlined" color="error" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="contained" type="submit">
+              Save
+            </Button>
           </Stack>
         </form>
       </Box>
